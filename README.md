@@ -27,4 +27,12 @@
    Python 3.8.5
    ```
 
+4. Run the program
+
+   ```
+   python main.py
+   ```
+
+   It should write to a `db.json` file in the root folder. There you can inspect what it scraped.
+
    You can exit the virtual environment by typing `exit`.
