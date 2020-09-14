@@ -17,7 +17,7 @@ def rss_single_feed(feed_url: str) -> List[Dict[str, str]]:
     feed_news = []
     rss_feed = feedparser.parse(feed_url)
     for entry in rss_feed.entries:
-        feed_news.append({"title": entry.title, "description": entry.description, "link": entry.link, "source": rss_feed.feed.title})
+        feed_news.append({"published": entry.published, "title": entry.title, "description": entry.description, "link": entry.link, "source": rss_feed.feed.title})
     return feed_news
 
 
