@@ -5,7 +5,11 @@
 
 ## Getting started
 
-1. Make sure you have Python 3 and pipenv installed.
+1. Make sure you have Python 3 and pipenv installed (Homebrew is a good option on macOS)
+
+   ```
+   brew install python pipenv
+   ```
 
 2. Go to the directory with the `Pipfile` and run
 
