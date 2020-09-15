@@ -1,10 +1,13 @@
 from multiprocessing.pool import ThreadPool
-import json
 import feedparser
+import schedule
+import time
+import pickle
 from typing import Dict, List
 
 # Constants
-RSS_FEEDS = ["http://www.memeorandum.com/feed.xml", "https://www.rnz.co.nz/rss/national.xml"]
+RSS_FEEDS = ["http://feeds.bbci.co.uk/news/england/rss.xml", "http://feeds.skynews.com/feeds/rss/uk.xml", "https://www.rnz.co.nz/rss/national.xml", "http://www.memeorandum.com/feed.xml"]
+MINUTES_BETWEEN_SCRAPES = 1
 MAX_WORKERS = 10  # Number of threads to use
 #
 
@@ -17,11 +20,12 @@ def rss_single_feed(feed_url: str) -> List[Dict[str, str]]:
     feed_news = []
     rss_feed = feedparser.parse(feed_url)
     for entry in rss_feed.entries:
-        feed_news.append({"published": entry.published, "title": entry.title, "description": entry.description, "link": entry.link, "source": rss_feed.feed.title})
+        feed_news.append({"title": entry.title, "description": entry.description, "link": entry.link, "published": entry.published, "source": rss_feed.feed.title})
+        # use entry.published_parsed instead???
     return feed_news
 
 
-def rss_scraper(rss_feeds: list, max_workers: int) -> List[Dict[str, str]]:
+def rss_scraper(rss_feeds: list, max_workers: int) -> None:
     """
     :param max_workers: int - threads to run
     :param rss_feeds: list - rss urls
@@ -32,13 +36,12 @@ def rss_scraper(rss_feeds: list, max_workers: int) -> List[Dict[str, str]]:
     results = pool.map(rss_single_feed, rss_feeds)
     for r in results:
         all_news.extend(r)
-    return all_news
+    pickle.dump(all_news, open("news_collated.data", "wb"))
 
-db = open('db.json', 'w')
 
 if __name__ == "__main__":
-    news_list = rss_scraper(RSS_FEEDS, MAX_WORKERS)
-    json = json.dumps(news_list)
-    db.write(json)
-    db.close
-        
+    schedule.every(MINUTES_BETWEEN_SCRAPES).minutes.do(rss_scraper, rss_feeds=RSS_FEEDS, max_workers=MAX_WORKERS)
+    # probably put this in the flask file and just import the scraper
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
