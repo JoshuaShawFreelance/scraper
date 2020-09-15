@@ -1,6 +1,6 @@
 from multiprocessing.pool import ThreadPool
-import feedparser
 import json
+import feedparser
 import schedule
 import time
 import pickle
