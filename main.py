@@ -39,10 +39,10 @@ def rss_scraper(rss_feeds: list, max_workers: int) -> None:
     # Pickle
     pickle.dump(all_news, open("news_collated.data", "wb")) # Personally I prefer using pickle, as it allows you to save more objects to a file then json, but we can decide if we want to use.
     # JSON 
-    db = open('db.json', 'w')
-    json = json.dumps(all_news)
-    db.write(json)
-    db.close
+    # db = open('db.json', 'w')
+    # json = json.dumps(all_news)
+    # db.write(json)
+    # db.close
     
 
 
