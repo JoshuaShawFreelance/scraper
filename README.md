@@ -1,6 +1,6 @@
 https://www.geeksforgeeks.org/how-to-send-a-json-object-to-a-server-using-javascript/
 
-Handy for intergrating into API
+Handy for integrating into API
 
 
 - [Installing Python and pipenv](https://github.com/LambdaSchool/CS-Wiki/wiki/Installing-Python-3-and-pipenv)
