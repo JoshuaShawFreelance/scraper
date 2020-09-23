@@ -4,6 +4,7 @@ import feedparser
 import schedule
 import time
 import pickle
+import traceback
 from typing import Dict, List
 
 
@@ -15,8 +16,7 @@ def rss_single_feed(feed_url: str) -> List[Dict[str, str]]:
     feed_news = []
     rss_feed = feedparser.parse(feed_url)
     for entry in rss_feed.entries:
-        feed_news.append({"title": entry.title, "description": entry.description, "link": entry.link, "published": entry.published, "source": rss_feed.feed.title})
-        # use entry.published_parsed instead???
+        feed_news.append({"title": entry.title, "link": entry.link, "published": entry.published, "source": rss_feed.feed.title})
     return feed_news
 
 
@@ -26,12 +26,15 @@ def rss_scraper(rss_feeds: list, max_workers: int) -> None:
     :param rss_feeds: list - rss urls
     :return: all_news: list - dictionaries
     """
-    all_news = []
-    pool = ThreadPool(max_workers)
-    results = pool.map(rss_single_feed, rss_feeds)
-    for r in results:
-        all_news.extend(r)
-    pickle.dump(all_news, open("news_collated.data", "wb"))
+    try:
+        all_news = []
+        pool = ThreadPool(max_workers)
+        results = pool.map(rss_single_feed, rss_feeds)
+        for r in results:
+            all_news.extend(r)
+        pickle.dump(all_news, open("news_collated.data", "wb"))
+    except:
+        traceback.print_exc()
 
 
 def start_scraper():
