@@ -34,11 +34,14 @@ def rss_scraper(rss_feeds: list, max_workers: int) -> None:
             all_news.extend(r)
         pickle.dump(all_news, open("news_collated.data", "wb"))
     except:
-        traceback.print_exc()
+        pass
+        #traceback.print_exc()
 
 
 def start_scraper():
+    # Run the scraper once now
     rss_scraper(rss_feeds=RSS_FEEDS, max_workers=MAX_WORKERS)
+    # Schedule the scraper to run every MINUTES_BETWEEN_SCRAPES minutes
     schedule.every(MINUTES_BETWEEN_SCRAPES).minutes.do(rss_scraper, rss_feeds=RSS_FEEDS, max_workers=MAX_WORKERS)
     while True:
         schedule.run_pending()

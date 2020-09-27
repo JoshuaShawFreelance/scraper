@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="feed"></div>
+<script>
+// Obfuscate + Minify code for production?
+
+function set_likes(url, likes) {
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "/post", true);
+    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    xhr.send('{"request_type": "set_likes", "url_list": ' + JSON.stringify(likes) + '}');
+};
+
+function set_dislikes(url, dislikes) {
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "/post", true);
+    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    xhr.send('{"request_type": "set_dislikes", "url_list": ' + JSON.stringify(dislikes) + '}');
+};
+
+function set_tags(url, tags) {
+    let tag_xhr = new XMLHttpRequest();
+    tag_xhr.open("POST", "/post", true);
+    tag_xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    tag_xhr.send('{"request_type": "set_tags", "tags": ' + JSON.stringify(tags) + '}');
+};
+
+function send_like(url, remove) {
+    let my_data_xhr = new XMLHttpRequest();
+    my_data_xhr.open("POST", "/post", true);
+    my_data_xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    my_data_xhr.onloadend = function () {
+        let my_data = JSON.parse(my_data_xhr.responseText);
+        let liked = my_data["liked"];
+        if (remove) {
+            liked = remove_element(liked, url);
+        }
+        else if (!liked.includes(url)) {
+            liked.push(url);
+        }
+        set_likes(url, liked);
+    }
+    my_data_xhr.send('{"request_type": "get_info"}');
+    location.reload();
+};
+
+function send_dislike(url, remove) {
+    let my_data_xhr = new XMLHttpRequest();
+    my_data_xhr.open("POST", "/post", true);
+    my_data_xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    my_data_xhr.onloadend = function () {
+        let my_data = JSON.parse(my_data_xhr.responseText);
+        let notliked = my_data["notliked"];
+        if (remove) {
+            notliked = remove_element(notliked, url);
+        }
+        else if (!notliked.includes(url)) {
+            notliked.push(url);
+        }
+        set_dislikes(url, notliked);
+    }
+    my_data_xhr.send('{"request_type": "get_info"}');
+    location.reload();
+};
+
+function send_tag(url, tag, remove) {
+    let my_data_xhr = new XMLHttpRequest();
+    my_data_xhr.open("POST", "/post", true);
+    my_data_xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    my_data_xhr.onloadend = function () {
+        let my_data = JSON.parse(my_data_xhr.responseText);
+        // TODO: FINISH
+    }
+    my_data_xhr.send('{"request_type": "get_info"}');
+};
+
+function remove_element(my_list, element) {
+  my_list.splice(my_list.indexOf(element), 1);
+  return my_list
+};
+
+function show_feed() {
+    let sanitised_feed = []
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "/post", true);
+    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    xhr.onloadend = function () {
+        let my_data = JSON.parse(xhr.responseText);
+        let xhr2 = new XMLHttpRequest();
+        xhr2.open("POST", "/post", true);
+        xhr2.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+        xhr2.onloadend = function () {
+            let my_feed = JSON.parse(xhr2.responseText);
+            for (let i = 0, size = my_feed.length; i < size; i++) {
+                let feed_item = my_feed[i];
+                feed_item["notliked"] = my_data["notliked"].includes(feed_item["link"]);
+                feed_item["liked"] = my_data["liked"].includes(feed_item["link"]);
+                if (feed_item["link"] in my_data["tags"]) {
+                    feed_item["tags"] = my_data["tags"][feed_item["link"]];
+                } else {
+                    feed_item["tags"] = [];
+                }
+                sanitised_feed.push(feed_item);
+            }
+            document.getElementById("feed").innerHTML = "";
+            for (let j = 0, size = sanitised_feed.length; j < size; j++) {
+                let sanitised_obj = sanitised_feed[j];
+                if (sanitised_obj.notliked !== true) {
+                    document.getElementById("feed").innerHTML = document.getElementById("feed").innerHTML + "<button onclick='send_dislike(\"" + sanitised_obj.link + "\", false)'>Skip</button>" + "<button onclick='send_like(\"" + sanitised_obj.link + "\", false)'>Like</button>" + "<a href='" + sanitised_obj.link + "'>" + sanitised_obj.title + "</a><br>";
+                }
+            }
+        };
+        xhr2.send('{"request_type": "feed"}');
+    };
+    xhr.send('{"request_type": "get_info"}');
+};
+
+show_feed();
+</script>
+</body>
+</html>

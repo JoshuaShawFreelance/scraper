@@ -7,17 +7,24 @@ import hashlib
 import pickle
 
 app = Flask(__name__)
+app.secret_key = b'change this for production'
+
+
+#  TODO: cookie based uuid
+#  TODO: html code
+#  TODO: gunicorn + nginx integration
 
 
 @app.route('/', methods=["GET"])
 def index():
-    return '--MAIN WEBSITE HTML GOES HERE--'
+    return render_template("index.html")
 
 
 @app.route("/post", methods=["POST"])
 def post():
     userid = get_uuid(request)
     json_data = request.get_json()
+    print(json_data)
     if not os.path.isfile("users.data"):
         pickle.dump({}, open("users.data", "wb"))
     userdata = pickle.load(open("users.data", "rb"))
@@ -33,7 +40,7 @@ def post():
     elif json_data["request_type"] == "uuid":
         return Response(json.dumps({"uuid": userid}), status=200, mimetype='application/json')
     elif json_data["request_type"] == "set_likes":
-        if "url_list" not in json_data:
+        if "url_list" not in json_data or type(json_data["url_list"]) != list:
             return Response(json.dumps({'Error': 'Bad Request'}), status=400, mimetype='application/json')
         else:
             """
@@ -43,7 +50,7 @@ def post():
             pickle.dump(userdata, open("users.data", "wb"))
             return Response(json.dumps({'Success': True}), status=200, mimetype='application/json')
     elif json_data["request_type"] == "set_dislikes":
-        if "url_list" not in json_data:
+        if "url_list" not in json_data or type(json_data["url_list"]) != list:
             return Response(json.dumps({'Error': 'Bad Request'}), status=400, mimetype='application/json')
         else:
             """
@@ -107,4 +114,5 @@ def get_uuid(request) -> str:
 
 if __name__ == "__main__":
     start_new_thread(start_scraper, ())
-    app.run(host="localhost", port="80")
+    app.run(host="localhost", port="80")  # Change this for production, use gunicorn and nginx instead
+    # app.run("0.0.0.0")
