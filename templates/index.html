@@ -2,9 +2,62 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Title</title> 
+    <style type="text/css" media="screen">
+      BODY
+      {
+        font-family: helvetica, arial, sans-serif;
+        font-size: 16px;
+        margin: 0;
+      }
+      
+      #header
+      {
+        background: linear-gradient(180deg, #0079FF 0%, #0068DB 100%);
+        color: #fff;
+        padding: 3px 6px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+      }
+      
+      .item
+      {
+        font-size: 14px;
+        line-height: 18px; 
+        border-bottom: 1px solid #efefef;
+        padding: 10px 20px;
+        margin: 5px 0;
+      }
+      
+      .source
+      {
+        font-weight: bold;
+      }
+      
+      .date
+      {
+        color: #ccc;
+        font-size: 14px;
+        font-weight: normal;
+      }
+      
+      a
+      {
+        color: #111;
+      }
+      
+      a:visited
+      {
+        color: purple;
+      }
+    </style>      
 </head>
 <body>
+  <div id="header">
+    linkFLTR
+  </div>
+  
 <div id="feed"></div>
 <script>
 // Obfuscate + Minify code for production?
@@ -111,7 +164,11 @@ function show_feed() {
             for (let j = 0, size = sanitised_feed.length; j < size; j++) {
                 let sanitised_obj = sanitised_feed[j];
                 if (sanitised_obj.notliked !== true) {
+                    /*
                     document.getElementById("feed").innerHTML = document.getElementById("feed").innerHTML + "<button onclick='send_dislike(\"" + sanitised_obj.link + "\", false)'>Skip</button>" + "<button onclick='send_like(\"" + sanitised_obj.link + "\", false)'>Like</button>" + "<a href='" + sanitised_obj.link + "'>" + sanitised_obj.title + "</a><br>";
+                    */
+                    document.getElementById("feed").innerHTML = document.getElementById("feed").innerHTML + 
+                    "<div class='item'><div class='source'>"+sanitised_obj.source+"<span class='date'> "+sanitised_obj.published+"</div><div class='story'><a href='" + sanitised_obj.link + "'>" + sanitised_obj.title + "</a></div><div class='actions'><a href='#' onclick='send_dislike(\"" + sanitised_obj.link + "\", false)'>Skip</a> <a href='#' onclick='send_like(\"" + sanitised_obj.link + "\", false)'>Save</a></div></div>";                                  
                 }
             }
         };
