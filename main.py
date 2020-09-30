@@ -34,7 +34,8 @@ def post():
         return Response(json.dumps({'Error': 'Bad Request'}), status=400, mimetype='application/json')
     elif json_data["request_type"] == "feed":
         if os.path.isfile("news_collated.data"):
-            return Response(json.dumps(pickle.load(open("news_collated.data", "rb"))), status=200, mimetype='application/json')
+            return Response(json.dumps(sorted(pickle.load(open("news_collated.data", "rb")), key=lambda i: i['published_parsed'], reverse=True)),
+                            status=200, mimetype='application/json')
         else:
             return Response(json.dumps([]), status=200, mimetype='application/json')
     elif json_data["request_type"] == "uuid":
@@ -72,6 +73,7 @@ def post():
         return Response(json.dumps(userdata[userid]), status=200, mimetype='application/json')
     else:
         return Response(json.dumps({'Error': 'Bad Request'}), status=400, mimetype='application/json')
+
 
 """
 POST JSON to /post endpoint
