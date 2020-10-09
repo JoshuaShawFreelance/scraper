@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>linkFLTR</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-      <style type="text/css" media="screen">
+    <title>Title</title>
+        <style type="text/css" media="screen">
       BODY
       {
         font-family: helvetica, arial, sans-serif;
@@ -67,7 +66,7 @@ function set_saved(url, saved) {
     xhr.onloadend = function () {
         location.reload();
     }
-};
+}
 
 function set_skipped(url, skipped) {
     let xhr = new XMLHttpRequest();
@@ -77,15 +76,37 @@ function set_skipped(url, skipped) {
     xhr.onloadend = function () {
         location.reload();
     }
-    // reload on
-};
+}
+
+function set_read(url, read) {
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "/post", true);
+    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    xhr.send('{"request_type": "set_read", "url_list": ' + JSON.stringify(read) + '}');
+    xhr.onloadend = function () {
+        location.reload();
+    }
+}
+
 
 function set_tags(url, tags) {
     let tag_xhr = new XMLHttpRequest();
     tag_xhr.open("POST", "/post", true);
     tag_xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
     tag_xhr.send('{"request_type": "set_tags", "tags": ' + JSON.stringify(tags) + '}');
-};
+}
+
+function send_read(url, remove) {
+    let read = window.my_data["read"];
+    if (remove) {
+            read = remove_element(read, url);
+    }
+    else if (!read.includes(url)) {
+            read.push(url);
+    }
+    set_read(url, read);
+    window.my_data["read"] = read;
+}
 
 function send_saved(url, remove) {
     let saved = window.my_data["saved"];
@@ -97,7 +118,7 @@ function send_saved(url, remove) {
     }
     set_saved(url, saved);
     window.my_data["saved"] = saved;
-};
+}
 
 function send_skipped(url, remove) {
     let skipped = window.my_data["skipped"];
@@ -109,30 +130,30 @@ function send_skipped(url, remove) {
     }
     set_skipped(url, skipped);
     window.my_data["skipped"] = skipped;
-};
+}
 
 
 function send_tag(url, tag, remove) {
     //window.my_data;
 
-};
+}
 
 function remove_element(my_list, element) {
   my_list.splice(my_list.indexOf(element), 1);
   return my_list
-};
+}
 
 function print_feed() {
     document.getElementById("feed").innerHTML = "";
     for (let j = 0, size = window.feed.length; j < size; j++) {
         let sanitised_obj = window.feed[j];
-        if (sanitised_obj.notliked !== true) {
+        if (sanitised_obj.skipped !== true) {
             document.getElementById("feed").innerHTML = document.getElementById("feed").innerHTML +
-                            "<div class='item'><div class='source'>" + sanitised_obj.source + "<span class='date'> " + sanitised_obj.published + "</div><div class='story'><a href='" + sanitised_obj.link + "'>" + sanitised_obj.title + "</a></div><div class='actions'><a href='#' onclick='send_skipped(\"" + sanitised_obj.link + "\", false)'>Skip</a> <a href='#' onclick='send_saved(\"" + sanitised_obj.link + "\", false)'>Save</a></div></div>";
+                            "<div class='item'><div class='source'>" + sanitised_obj.source + "<span class='date'> " + sanitised_obj.published + "</div><div class='story'><a href='" + sanitised_obj.link + "' onclick='send_read(\"" + sanitised_obj.link + "\", false)'>" + sanitised_obj.title + "</a></div><div class='actions'><a href='' onclick='send_skipped(\"" + sanitised_obj.link + "\", false)'>Skip</a> <a href='' onclick='send_saved(\"" + sanitised_obj.link + "\", false)'>Save</a></div></div>";
 
         }
     }
-};
+}
 
 function show_feed() {
     if (!window.my_data) {
@@ -151,6 +172,7 @@ function show_feed() {
                     let feed_item = my_feed[i];
                     feed_item["skipped"] = my_data["skipped"].includes(feed_item["link"]);
                     feed_item["saved"] = my_data["saved"].includes(feed_item["link"]);
+                    feed_item["read"] = my_data["read"].includes(feed_item["read"]);
                     if (feed_item["link"] in my_data["tags"]) {
                         feed_item["tags"] = my_data["tags"][feed_item["link"]];
                     } else {
@@ -167,7 +189,7 @@ function show_feed() {
         };
         xhr.send('{"request_type": "get_info"}');
     }
-};
+}
 
 show_feed();
 </script>

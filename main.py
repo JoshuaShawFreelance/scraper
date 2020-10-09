@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file, session, redirect, jsonify, Response
+from flask import Flask, render_template, request, send_file, session, redirect, jsonify, Response, make_response
 from _thread import start_new_thread
 from scraper import start_scraper
 import json
@@ -17,21 +17,27 @@ app.secret_key = b'change this for production'
 
 @app.route('/', methods=["GET"])
 def index():
-    return render_template("index.html")
+    resp = make_response(render_template("index.html"))
+    resp.set_cookie('userID', get_uuid(request))
+    return resp
 
 
 @app.route("/post", methods=["POST"])
 def post():
     userid = get_uuid(request)
     json_data = request.get_json()
+    print(json_data)
     if not os.path.isfile("users.data"):
         pickle.dump({}, open("users.data", "wb"))
     userdata = pickle.load(open("users.data", "rb"))
     if userid not in userdata:
-        userdata[userid] = {"saved": [], "skipped": [], "tags": {}}
+        userdata[userid] = {"saved": [], "skipped": [], "read": [], "tags": {}} ####################################
     if type(json_data) != dict or "request_type" not in json_data:
         return Response(json.dumps({'Error': 'Bad Request'}), status=400, mimetype='application/json')
     elif json_data["request_type"] == "feed":
+        """
+        Returning feed (User-Based)
+        """
         if os.path.isfile("news_collated.data"):
             return Response(json.dumps(sorted(pickle.load(open("news_collated.data", "rb")), key=lambda i: i['published_parsed'], reverse=True)),
                             status=200, mimetype='application/json')
@@ -44,9 +50,19 @@ def post():
             return Response(json.dumps({'Error': 'Bad Request'}), status=400, mimetype='application/json')
         else:
             """
-            Saving (User-Based)
+            Saving Saves (User-Based)
             """
             userdata[userid]["saved"] = json_data["url_list"]
+            pickle.dump(userdata, open("users.data", "wb"))
+            return Response(json.dumps({'Success': True}), status=200, mimetype='application/json')
+    elif json_data["request_type"] == "set_read":
+        if "url_list" not in json_data or type(json_data["url_list"]) != list:
+            return Response(json.dumps({'Error': 'Bad Request'}), status=400, mimetype='application/json')
+        else:
+            """
+            Saving Reads (User-Based)
+            """
+            userdata[userid]["read"] = json_data["url_list"]
             pickle.dump(userdata, open("users.data", "wb"))
             return Response(json.dumps({'Success': True}), status=200, mimetype='application/json')
     elif json_data["request_type"] == "set_skipped":
@@ -54,7 +70,7 @@ def post():
             return Response(json.dumps({'Error': 'Bad Request'}), status=400, mimetype='application/json')
         else:
             """
-            Skipping (User-Based)
+            Saving Skips (User-Based)
             """
             userdata[userid]["skipped"] = json_data["url_list"]
             pickle.dump(userdata, open("users.data", "wb"))
@@ -63,7 +79,7 @@ def post():
         if "tags" not in json_data or type(json_data["tags"]) != dict:
             return Response(json.dumps({'Error': 'Bad Request'}), status=400, mimetype='application/json')
         """
-        Saving Tag (User-Based)
+        Saving Tags (User-Based)
         """
         userdata[userid]["tags"] = json_data["tags"]
         pickle.dump(userdata, open("users.data", "wb"))
@@ -102,7 +118,7 @@ E.g. if you post set_likes with an empty url_list, you will undo all your likes 
 """
 
 
-def get_uuid(request) -> str:
+def get_uuid_basic(request) -> str:
     """
     Primitive method for generating a unique user identifier. I'll make a cookie based one too
     + Doesn't require cookies (or cookie notice)
@@ -111,6 +127,13 @@ def get_uuid(request) -> str:
     :return:
     """
     return hashlib.md5(bytes(request.remote_addr + request.headers.get('User-Agent'), "utf-8")).hexdigest()
+
+
+def get_uuid(request) -> str:
+    user_id = request.cookies.get('userID')
+    if not user_id:
+        user_id = get_uuid_basic(request)
+    return user_id
 
 
 if __name__ == "__main__":
