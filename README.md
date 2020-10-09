@@ -1,3 +1,8 @@
+https://www.geeksforgeeks.org/how-to-send-a-json-object-to-a-server-using-javascript/
+
+Handy for integrating into API
+
+
 - [Installing Python and pipenv](https://github.com/LambdaSchool/CS-Wiki/wiki/Installing-Python-3-and-pipenv)
 - [JavaScript<->Python cheatsheet](https://github.com/LambdaSchool/CS-Wiki/wiki/Javascript-Python-cheatsheet)
 - [How to read Specs and Code](https://github.com/LambdaSchool/CS-Wiki/wiki/How-to-Read-Specifications-and-Code)
