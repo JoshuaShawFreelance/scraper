@@ -1,1 +1,1 @@
-web: python main.py
+web: sudo python main.py
