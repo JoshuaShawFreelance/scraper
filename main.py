@@ -138,5 +138,5 @@ def get_uuid(request) -> str:
 
 if __name__ == "__main__":
     start_new_thread(start_scraper, ())
-    app.run(host="0.0.0.0", port="80")  # Change this for production, use gunicorn and nginx instead
+    app.run(host="0.0.0.0", port="5000")  # Change this for production, use gunicorn and nginx instead
     # app.run("0.0.0.0")
