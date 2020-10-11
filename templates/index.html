@@ -83,7 +83,7 @@
   color: white;
   padding: 14px 16px;
   background-color: inherit;
-  font-family: inherit; /* Important for vertical align on mobile phones */
+  font-family: inherit;
   margin: 0; /* Important for vertical align on mobile phones */
 }
 
@@ -147,7 +147,9 @@ function set_saved(url, saved) {
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
     xhr.send('{"request_type": "set_saved", "url_list": ' + JSON.stringify(saved) + '}');
     xhr.onloadend = function () {
-        location.reload();
+        //location.reload();
+        parse_feed(window.feed, window.my_data);
+        print_feed();
     }
 }
 
@@ -157,7 +159,9 @@ function set_skipped(url, skipped) {
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
     xhr.send('{"request_type": "set_skipped", "url_list": ' + JSON.stringify(skipped) + '}');
     xhr.onloadend = function () {
-        location.reload();
+        //location.reload();
+        parse_feed(window.feed, window.my_data);
+        print_feed();
     }
 }
 
