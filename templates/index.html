@@ -190,12 +190,14 @@ function add_url_dict(url){
 }
 
 
+
+
 function send_read(url, remove) {
     let read = window.my_data["read"];
     if (remove) {
             read = remove_element(read, url);
     }
-    else if (!read.includes(url)) {
+    else if (!read.indexOf(url) > -1) {
             read.push(url);
             add_url_dict(url);
     }
@@ -208,7 +210,7 @@ function send_saved(url, remove) {
     if (remove) {
             saved = remove_element(saved, url);
     }
-    else if (!saved.includes(url)) {
+    else if (!saved.indexOf(url) > -1) { //!saved.indexOf(url) > -1  //!saved.includes(url)
             saved.push(url);
             add_url_dict(url);
     }
@@ -221,7 +223,7 @@ function send_skipped(url, remove) {
     if (remove) {
             skipped = remove_element(skipped, url);
     }
-    else if (!skipped.includes(url)) {
+    else if (!skipped.indexOf(url) > -1) {
             skipped.push(url);
             add_url_dict(url);
     }
@@ -255,9 +257,10 @@ function parse_feed(my_feed, my_data){
     let sanitised_feed = []
     for (let i = 0, size = my_feed.length; i < size; i++) {
         let feed_item = my_feed[i];
-        feed_item["skipped"] = my_data["skipped"].includes(feed_item["link"]);
-        feed_item["saved"] = my_data["saved"].includes(feed_item["link"]);
-        feed_item["read"] = my_data["read"].includes(feed_item["read"]);
+        //!saved.indexOf(url) > -1
+        feed_item["skipped"] = my_data["skipped"].indexOf(feed_item["link"]) > -1;
+        feed_item["saved"] = my_data["saved"].indexOf(feed_item["link"]) > -1;
+        feed_item["read"] = my_data["read"].indexOf(feed_item["read"]) > -1;
         if (feed_item["link"] in my_data["tags"]) {
             feed_item["tags"] = my_data["tags"][feed_item["link"]];
         } else {
