@@ -140,13 +140,18 @@
 <body>
 <div id="feed"></div>
 <script>
-// Obfuscate + Minify code for production?
+    // Obfuscate + Minify code for production?
+
+function removeDuplicates(array) {
+  return array.filter((a, b) => array.indexOf(a) === b)
+}
+
 
 function set_saved(url, saved) {
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "/post", true);
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    xhr.send('{"request_type": "set_saved", "url_list": ' + JSON.stringify(saved) + '}');
+    xhr.send('{"request_type": "set_saved", "url_list": ' + JSON.stringify(removeDuplicates(saved)) + '}');
     xhr.onloadend = function () {
         parse_feed(window.feed, window.my_data);
         print_feed();
@@ -158,7 +163,7 @@ function set_skipped(url, skipped) {
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "/post", true);
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    xhr.send('{"request_type": "set_skipped", "url_list": ' + JSON.stringify(skipped) + '}');
+    xhr.send('{"request_type": "set_skipped", "url_list": ' + JSON.stringify(removeDuplicates(skipped)) + '}');
     xhr.onloadend = function () {
         parse_feed(window.feed, window.my_data);
         print_feed();
@@ -170,7 +175,7 @@ function set_read(url, read) {
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "/post", true);
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    xhr.send('{"request_type": "set_read", "url_list": ' + JSON.stringify(read) + '}');
+    xhr.send('{"request_type": "set_read", "url_list": ' + JSON.stringify(removeDuplicates(read)) + '}');
     xhr.onloadend = function () {
         parse_feed(window.feed, window.my_data);
         print_feed();

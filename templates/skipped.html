@@ -142,15 +142,21 @@
 <script>
 // Obfuscate + Minify code for production?
 
+function removeDuplicates(array) {
+  return array.filter((a, b) => array.indexOf(a) === b)
+}
+
+
 function set_saved(url, saved) {
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "/post", true);
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    xhr.send('{"request_type": "set_saved", "url_list": ' + JSON.stringify(saved) + '}');
+    xhr.send('{"request_type": "set_saved", "url_list": ' + JSON.stringify(removeDuplicates(saved)) + '}');
     xhr.onloadend = function () {
         //location.reload();
         parse_feed(window.feed, window.my_data);
         print_feed();
+        add_url_dict(url);
     }
 }
 
@@ -158,15 +164,24 @@ function set_skipped(url, skipped) {
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "/post", true);
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    xhr.send('{"request_type": "set_skipped", "url_list": ' + JSON.stringify(skipped) + '}');
+    xhr.send('{"request_type": "set_skipped", "url_list": ' + JSON.stringify(removeDuplicates(skipped)) + '}');
+    xhr.onloadend = function () {
+        //location.reload();
+        parse_feed(window.feed, window.my_data);
+        print_feed();
+        add_url_dict(url);
+    }
 }
 
 function set_read(url, read) {
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "/post", true);
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    xhr.send('{"request_type": "set_read", "url_list": ' + JSON.stringify(read) + '}');
+    xhr.send('{"request_type": "set_read", "url_list": ' + JSON.stringify(removeDuplicates(read)) + '}');
     xhr.onloadend = function () {
+        parse_feed(window.feed, window.my_data);
+        print_feed();
+        add_url_dict(url);
         window.location.href = url;  //maybe offer setting to change between?
         //window.open(url, "_blank");
     }
@@ -252,7 +267,7 @@ function print_feed() {
         let url = window.my_data.skipped[j];
         let url_object = window.my_data.url_dict[url];
         document.getElementById("feed").innerHTML = document.getElementById("feed").innerHTML +
-            "<div class='item'><div class='source'>" + url_object.source + "<span class='date'> " + url_object.published + "</div><div class='story'><a href='#' onclick='send_read(\"" + url + "\", false)'>" + url_object.title + "</a></div><div class='actions'></div></div>";
+            "<div class='item'><div class='source'>" + url_object.source + "<span class='date'> " + url_object.published + "</div><div class='story'><a href='#' onclick='send_read(\"" + url + "\", false)'>" + url_object.title + "</a></div><div class='actions'><a href='#' onclick='send_saved(\"" + url + "\", false)'>Save</a></div></div>";
         //<a href='#' onclick='send_read(\"" + url + "\", true)'>Mark as Unread</a>
     }
 }
