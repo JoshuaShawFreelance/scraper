@@ -25,21 +25,21 @@ def index():
 
 @app.route('/saved', methods=["GET"])
 def saved():
-    resp = make_response(render_template("index.html"))  # Need to change
+    resp = make_response(render_template("saved.html"))  # Need to change
     resp.set_cookie('userID', get_uuid(request))
     return resp
 
 
 @app.route('/read', methods=["GET"])
 def read():
-    resp = make_response(render_template("index.html"))  # Need to change
+    resp = make_response(render_template("read.html"))  # Need to change
     resp.set_cookie('userID', get_uuid(request))
     return resp
 
 
 @app.route('/skipped', methods=["GET"])
 def skipped():
-    resp = make_response(render_template("index.html"))  # Need to change
+    resp = make_response(render_template("skipped.html"))  # Need to change
     resp.set_cookie('userID', get_uuid(request))
     return resp
 
@@ -67,6 +67,16 @@ def post():
             return Response(json.dumps([]), status=200, mimetype='application/json')
     elif json_data["request_type"] == "uuid":
         return Response(json.dumps({"uuid": userid}), status=200, mimetype='application/json')
+    elif json_data["request_type"] == "set_url_dict":
+        if "url_dict" not in json_data or type(json_data["url_dict"]) != dict:
+            return Response(json.dumps({'Error': 'Bad Request'}), status=400, mimetype='application/json')
+        else:
+            """
+            Saving url_dict (User-Based)
+            """
+            userdata[userid]["url_dict"] = json_data["url_dict"]
+            pickle.dump(userdata, open("users.data", "wb"))
+            return Response(json.dumps({'Success': True}), status=200, mimetype='application/json')
     elif json_data["request_type"] == "set_saved":
         if "url_list" not in json_data or type(json_data["url_list"]) != list:
             return Response(json.dumps({'Error': 'Bad Request'}), status=400, mimetype='application/json')
@@ -107,6 +117,7 @@ def post():
         pickle.dump(userdata, open("users.data", "wb"))
         return Response(json.dumps({'Success': True}), status=200, mimetype='application/json')
     elif json_data["request_type"] == "get_info":
+        print([json.dumps(userdata[userid])])
         return Response(json.dumps(userdata[userid]), status=200, mimetype='application/json')
     else:
         return Response(json.dumps({'Error': 'Bad Request'}), status=400, mimetype='application/json')
