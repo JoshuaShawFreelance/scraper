@@ -4,139 +4,20 @@
     <meta charset="UTF-8">
     <title>myFilter/saved</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-        <style type="text/css" media="screen">
-      BODY
-      {
-        font-family: helvetica, arial, sans-serif;
-        font-size: 16px;
-        margin: 0;
-      }
-
-      #header
-      {
-        background: linear-gradient(180deg, #0079FF 0%, #0068DB 100%);
-        color: #fff;
-        padding: 3px 6px;
-        text-align: center;
-        font-size: 18px;
-        font-weight: bold;
-      }
-
-      .item
-      {
-        font-size: 14px;
-        line-height: 18px;
-        border-bottom: 1px solid #efefef;
-        padding: 10px 20px;
-        margin: 5px 0;
-      }
-
-      .source
-      {
-        font-weight: bold;
-      }
-
-      .date
-      {
-        color: #ccc;
-        font-size: 14px;
-        font-weight: normal;
-      }
-
-      a
-      {
-        color: #111;
-      }
-
-      a:visited
-      {
-        color: purple;
-      }
-
-      /* Navbar container */
-.navbar {
-  overflow: hidden;
-  background-color: #333;
-  font-family: Arial;
-}
-
-/* Links inside the navbar */
-.navbar a {
-  float: left;
-  font-size: 16px;
-  color: white;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-}
-
-/* The dropdown container */
-.dropdown {
-  float: left;
-  overflow: hidden;
-}
-
-/* Dropdown button */
-.dropdown .dropbtn {
-  font-size: 16px;
-  border: none;
-  outline: none;
-  color: white;
-  padding: 14px 16px;
-  background-color: inherit;
-  font-family: inherit;
-  margin: 0; /* Important for vertical align on mobile phones */
-}
-
-/* Add a red background color to navbar links on hover */
-.navbar a:hover, .dropdown:hover .dropbtn {
-  background-color: red;
-}
-
-/* Dropdown content (hidden by default) */
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-}
-
-/* Links inside the dropdown */
-.dropdown-content a {
-  float: none;
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-  text-align: left;
-}
-
-/* Add a grey background color to dropdown links on hover */
-.dropdown-content a:hover {
-  background-color: #ddd;
-}
-
-/* Show the dropdown menu on hover */
-.dropdown:hover .dropdown-content {
-  display: block;
-}
-    </style>
-<div class="navbar">
-    <a href="/">Saved</a>
-  <div class="dropdown">
-    <button class="dropbtn">Navigation
-      <i class="fa fa-caret-down"></i>
-    </button>
-    <div class="dropdown-content">
-      <a href="/saved">Saved</a>
-      <a href="/skipped">Skipped</a>
-      <a href="/read">Read</a>
+  <link rel="stylesheet" type="text/css" href="/static/css/main.css" />
+</head>
+  <div class="navbar">
+    <div class="dropdown">
+      <button class="dropbtn">Saved
+        <i class="fa fa-caret-down"></i>
+      </button>
+      <div class="dropdown-content">
+        <a href="/">Latest</a>
+        <a href="/skipped">Skipped</a>
+        <a href="/read">Read</a>
+      </div>
     </div>
   </div>
-</div>
-</head>
 <body>
 <div id="feed"></div>
 <script>
