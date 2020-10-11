@@ -179,6 +179,17 @@ function set_read(url, read) {
 //    tag_xhr.send('{"request_type": "set_tags", "tags": ' + JSON.stringify(tags) + '}');
 //}
 
+
+function add_url_dict(url){
+    for (let j = 0, size = window.feed.length; j < size; j++) {
+        let sanitised_obj = window.feed[j];
+        if (sanitised_obj.link === url) {
+            window.my_data.url_dict[url] = {"source": sanitised_obj.source, "published": sanitised_obj.published, "title": sanitised_obj.title};
+        }
+    }
+}
+
+
 function send_read(url, remove) {
     let read = window.my_data["read"];
     if (remove) {
@@ -186,6 +197,7 @@ function send_read(url, remove) {
     }
     else if (!read.includes(url)) {
             read.push(url);
+            add_url_dict(url);
     }
     window.my_data["read"] = read;
     set_read(url, read);
@@ -198,6 +210,7 @@ function send_saved(url, remove) {
     }
     else if (!saved.includes(url)) {
             saved.push(url);
+            add_url_dict(url);
     }
     window.my_data["saved"] = saved;
     set_saved(url, saved);
@@ -210,6 +223,7 @@ function send_skipped(url, remove) {
     }
     else if (!skipped.includes(url)) {
             skipped.push(url);
+            add_url_dict(url);
     }
     window.my_data["skipped"] = skipped;
     set_skipped(url, skipped);
