@@ -53,7 +53,7 @@ def post():
         pickle.dump({}, open("users.data", "wb"))
     userdata = pickle.load(open("users.data", "rb"))
     if userid not in userdata:
-        userdata[userid] = {"saved": [], "skipped": [], "read": [], "tags": {}} ####################################
+        userdata[userid] = {"saved": [], "skipped": [], "read": [], "tags": {}, "url_dict": {}}
     if type(json_data) != dict or "request_type" not in json_data:
         return Response(json.dumps({'Error': 'Bad Request'}), status=400, mimetype='application/json')
     elif json_data["request_type"] == "feed":
