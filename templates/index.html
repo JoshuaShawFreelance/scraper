@@ -123,7 +123,7 @@
 }
     </style>
 <div class="navbar">
-    <a href="/">Home</a>
+    <a href="/">Latest News</a>
   <div class="dropdown">
     <button class="dropbtn">Navigation
       <i class="fa fa-caret-down"></i>
@@ -158,11 +158,6 @@ function set_skipped(url, skipped) {
     xhr.open("POST", "/post", true);
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
     xhr.send('{"request_type": "set_skipped", "url_list": ' + JSON.stringify(skipped) + '}');
-    xhr.onloadend = function () {
-        //location.reload();
-        parse_feed(window.feed, window.my_data);
-        print_feed();
-    }
 }
 
 function set_read(url, read) {
@@ -219,6 +214,8 @@ function send_saved(url, remove) {
             add_url_dict(url);
     }
     window.my_data["saved"] = saved;
+    parse_feed(window.feed, window.my_data);
+    print_feed();
     set_saved(url, saved);
 }
 
@@ -232,6 +229,8 @@ function send_skipped(url, remove) {
             add_url_dict(url);
     }
     window.my_data["skipped"] = skipped;
+    parse_feed(window.feed, window.my_data);
+    print_feed();
     set_skipped(url, skipped);
 }
 
