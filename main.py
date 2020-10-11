@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, send_file, session, redirect, jsonify, Response, make_response
+from constants import MAX_FEED_LENGTH
 from _thread import start_new_thread
 from scraper import start_scraper
 import json
@@ -22,6 +23,27 @@ def index():
     return resp
 
 
+@app.route('/saved', methods=["GET"])
+def saved():
+    resp = make_response(render_template("index.html"))  # Need to change
+    resp.set_cookie('userID', get_uuid(request))
+    return resp
+
+
+@app.route('/read', methods=["GET"])
+def read():
+    resp = make_response(render_template("index.html"))  # Need to change
+    resp.set_cookie('userID', get_uuid(request))
+    return resp
+
+
+@app.route('/skipped', methods=["GET"])
+def skipped():
+    resp = make_response(render_template("index.html"))  # Need to change
+    resp.set_cookie('userID', get_uuid(request))
+    return resp
+
+
 @app.route("/post", methods=["POST"])
 def post():
     userid = get_uuid(request)
@@ -39,7 +61,7 @@ def post():
         Returning feed (User-Based)
         """
         if os.path.isfile("news_collated.data"):
-            return Response(json.dumps(sorted(pickle.load(open("news_collated.data", "rb")), key=lambda i: i['published_parsed'], reverse=True)),
+            return Response(json.dumps(first_n_elems(sorted(pickle.load(open("news_collated.data", "rb")), key=lambda i: i['published_parsed'], reverse=True), MAX_FEED_LENGTH)),
                             status=200, mimetype='application/json')
         else:
             return Response(json.dumps([]), status=200, mimetype='application/json')
@@ -136,7 +158,14 @@ def get_uuid(request) -> str:
     return user_id
 
 
+def first_n_elems(my_list, n):
+    if n > len(my_list):
+        return my_list[:len(my_list)]
+    else:
+        return my_list[:n]
+
+
 if __name__ == "__main__":
     start_new_thread(start_scraper, ())
-    app.run(host="0.0.0.0")  # Change this for production, use gunicorn and nginx instead
+    app.run(host="0.0.0.0", port="80")  # Change this for production, use gunicorn and nginx instead
     # app.run("0.0.0.0")

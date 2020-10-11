@@ -84,7 +84,7 @@ function set_read(url, read) {
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
     xhr.send('{"request_type": "set_read", "url_list": ' + JSON.stringify(read) + '}');
     xhr.onloadend = function () {
-        location.reload();
+        window.location.href = url;
     }
 }
 
@@ -104,8 +104,8 @@ function send_read(url, remove) {
     else if (!read.includes(url)) {
             read.push(url);
     }
-    set_read(url, read);
     window.my_data["read"] = read;
+    set_read(url, read);
 }
 
 function send_saved(url, remove) {
@@ -116,8 +116,8 @@ function send_saved(url, remove) {
     else if (!saved.includes(url)) {
             saved.push(url);
     }
-    set_saved(url, saved);
     window.my_data["saved"] = saved;
+    set_saved(url, saved);
 }
 
 function send_skipped(url, remove) {
@@ -128,8 +128,8 @@ function send_skipped(url, remove) {
     else if (!skipped.includes(url)) {
             skipped.push(url);
     }
-    set_skipped(url, skipped);
     window.my_data["skipped"] = skipped;
+    set_skipped(url, skipped);
 }
 
 
@@ -147,48 +147,48 @@ function print_feed() {
     document.getElementById("feed").innerHTML = "";
     for (let j = 0, size = window.feed.length; j < size; j++) {
         let sanitised_obj = window.feed[j];
-        if (sanitised_obj.skipped !== true) {
+        if ((sanitised_obj.skipped !== true) && (sanitised_obj.saved !== true)) {
             document.getElementById("feed").innerHTML = document.getElementById("feed").innerHTML +
-                            "<div class='item'><div class='source'>" + sanitised_obj.source + "<span class='date'> " + sanitised_obj.published + "</div><div class='story'><a href='" + sanitised_obj.link + "' onclick='send_read(\"" + sanitised_obj.link + "\", false)'>" + sanitised_obj.title + "</a></div><div class='actions'><a href='' onclick='send_skipped(\"" + sanitised_obj.link + "\", false)'>Skip</a> <a href='' onclick='send_saved(\"" + sanitised_obj.link + "\", false)'>Save</a></div></div>";
-
+                            "<div class='item'><div class='source'>" + sanitised_obj.source + "<span class='date'> " + sanitised_obj.published + "</div><div class='story'><a href='' onclick='send_read(\"" + sanitised_obj.link + "\", false)'>" + sanitised_obj.title + "</a></div><div class='actions'><a href='' onclick='send_skipped(\"" + sanitised_obj.link + "\", false)'>Skip</a> <a href='' onclick='send_saved(\"" + sanitised_obj.link + "\", false)'>Save</a></div></div>";
         }
     }
 }
 
-function show_feed() {
-    if (!window.my_data) {
-        let sanitised_feed = []
-        let xhr = new XMLHttpRequest();
-        xhr.open("POST", "/post", true);
-        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-        xhr.onloadend = function () {
-            let my_data = JSON.parse(xhr.responseText);
-            let xhr2 = new XMLHttpRequest();
-            xhr2.open("POST", "/post", true);
-            xhr2.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-            xhr2.onloadend = function () {
-                let my_feed = JSON.parse(xhr2.responseText);
-                for (let i = 0, size = my_feed.length; i < size; i++) {
-                    let feed_item = my_feed[i];
-                    feed_item["skipped"] = my_data["skipped"].includes(feed_item["link"]);
-                    feed_item["saved"] = my_data["saved"].includes(feed_item["link"]);
-                    feed_item["read"] = my_data["read"].includes(feed_item["read"]);
-                    if (feed_item["link"] in my_data["tags"]) {
-                        feed_item["tags"] = my_data["tags"][feed_item["link"]];
-                    } else {
-                        feed_item["tags"] = [];
-                    }
-                    sanitised_feed.push(feed_item);
-                }
-
-                window.feed = sanitised_feed;
-                window.my_data = my_data;
-                print_feed();
-            };
-            xhr2.send('{"request_type": "feed"}');
-        };
-        xhr.send('{"request_type": "get_info"}');
+function parse_feed(my_feed, my_data){
+    let sanitised_feed = []
+    for (let i = 0, size = my_feed.length; i < size; i++) {
+        let feed_item = my_feed[i];
+        feed_item["skipped"] = my_data["skipped"].includes(feed_item["link"]);
+        feed_item["saved"] = my_data["saved"].includes(feed_item["link"]);
+        feed_item["read"] = my_data["read"].includes(feed_item["read"]);
+        if (feed_item["link"] in my_data["tags"]) {
+            feed_item["tags"] = my_data["tags"][feed_item["link"]];
+        } else {
+            feed_item["tags"] = [];
+        }
+        sanitised_feed.push(feed_item);
     }
+    window.feed = sanitised_feed;
+    window.my_data = my_data;
+}
+
+function show_feed() {
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "/post", true);
+    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    xhr.onloadend = function () {
+        let my_data = JSON.parse(xhr.responseText);
+        let xhr2 = new XMLHttpRequest();
+        xhr2.open("POST", "/post", true);
+        xhr2.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+        xhr2.onloadend = function () {
+            let my_feed = JSON.parse(xhr2.responseText);
+            parse_feed(my_feed, my_data);
+            print_feed();
+        };
+        xhr2.send('{"request_type": "feed"}');
+    };
+    xhr.send('{"request_type": "get_info"}');
 }
 
 show_feed();
