@@ -167,8 +167,8 @@ function set_read(url, read) {
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
     xhr.send('{"request_type": "set_read", "url_list": ' + JSON.stringify(read) + '}');
     xhr.onloadend = function () {
-        //window.location.href = url;  //maybe offer setting to change between?
-        window.open(url, "_blank");
+        window.location.href = url;  //maybe offer setting to change between?
+        //window.open(url, "_blank");
     }
 }
 
