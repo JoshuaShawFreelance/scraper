@@ -140,13 +140,18 @@
 <body>
 <div id="feed"></div>
 <script>
-// Obfuscate + Minify code for production?
+    // Obfuscate + Minify code for production?
+
+function removeDuplicates(array) {
+  return array.filter((a, b) => array.indexOf(a) === b)
+}
+
 
 function set_saved(url, saved) {
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "/post", true);
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    xhr.send('{"request_type": "set_saved", "url_list": ' + JSON.stringify(saved) + '}');
+    xhr.send('{"request_type": "set_saved", "url_list": ' + JSON.stringify(removeDuplicates(saved)) + '}');
     xhr.onloadend = function () {
         parse_feed(window.feed, window.my_data);
         print_feed();
@@ -158,7 +163,7 @@ function set_skipped(url, skipped) {
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "/post", true);
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    xhr.send('{"request_type": "set_skipped", "url_list": ' + JSON.stringify(skipped) + '}');
+    xhr.send('{"request_type": "set_skipped", "url_list": ' + JSON.stringify(removeDuplicates(skipped)) + '}');
     xhr.onloadend = function () {
         parse_feed(window.feed, window.my_data);
         print_feed();
@@ -170,11 +175,13 @@ function set_read(url, read) {
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "/post", true);
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    xhr.send('{"request_type": "set_read", "url_list": ' + JSON.stringify(read) + '}');
+    xhr.send('{"request_type": "set_read", "url_list": ' + JSON.stringify(removeDuplicates(read)) + '}');
     xhr.onloadend = function () {
+        parse_feed(window.feed, window.my_data);
+        print_feed();
         add_url_dict(url);
-        //window.location.href = url;  //maybe offer setting to change between?
-        window.open(url, "_blank");
+        window.location.href = url;  //maybe offer setting to change between?
+        //window.open(url, "_blank");
     }
 }
 
@@ -207,6 +214,7 @@ function send_read(url, remove) {
     }
     else if (!read.indexOf(url) > -1) {
             read.push(url);
+            add_url_dict(url);
     }
     window.my_data["read"] = read;
     set_read(url, read);
@@ -219,10 +227,9 @@ function send_saved(url, remove) {
     }
     else if (!saved.indexOf(url) > -1) { //equivalent to !saved.includes(url) (but IE compatible)
             saved.push(url);
+            add_url_dict(url);
     }
     window.my_data["saved"] = saved;
-    parse_feed(window.feed, window.my_data);
-    print_feed();
     set_saved(url, saved);
 }
 
@@ -236,8 +243,6 @@ function send_skipped(url, remove) {
             add_url_dict(url);
     }
     window.my_data["skipped"] = skipped;
-    parse_feed(window.feed, window.my_data);
-    print_feed();
     set_skipped(url, skipped);
 }
 
@@ -256,7 +261,7 @@ function print_feed() {
     document.getElementById("feed").innerHTML = "";
     for (let j = 0, size = window.feed.length; j < size; j++) {
         let sanitised_obj = window.feed[j];
-        if ((sanitised_obj.skipped !== true) && (sanitised_obj.saved !== true)) {
+        if ((sanitised_obj.skipped !== true) && (sanitised_obj.saved !== true) && (window.my_data.read.indexOf(sanitised_obj.link) === -1)) {
             document.getElementById("feed").innerHTML = document.getElementById("feed").innerHTML +
                             "<div class='item'><div class='source'>" + sanitised_obj.source + "<span class='date'> " + sanitised_obj.published + "</div><div class='story'><a href='#' onclick='send_read(\"" + sanitised_obj.link + "\", false)'>" + sanitised_obj.title + "</a></div><div class='actions'><a href='#' onclick='send_skipped(\"" + sanitised_obj.link + "\", false)'>Skip</a> <a href='#' onclick='send_saved(\"" + sanitised_obj.link + "\", false)'>Save</a></div></div>";
         }
