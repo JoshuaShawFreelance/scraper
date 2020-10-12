@@ -1,6 +1,6 @@
 BODY
 	  {
-		font-family: helvetica, arial, sans-serif;
+		  font-family: -apple-system, BlinkMacSystemFont, helvetica, arial, sans-serif;
 		font-size: 16px;
 		margin: 0;
 	  }
@@ -23,10 +23,17 @@ BODY
 		padding: 10px 20px;
 		margin: 5px 0;
 	  }
+	  
+	  .story a
+	  {
+		font-weight: bold;
+	  }
 
 	  .source
 	  {
-		font-weight: bold;
+		font-weight: normal;
+		color: #aaa;
+		display: inline;
 	  }
 
 	  .date
@@ -39,6 +46,7 @@ BODY
 	  a
 	  {
 		color: #111;
+		text-decoration: none;
 	  }
 
 	  a:visited
