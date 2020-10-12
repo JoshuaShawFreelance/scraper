@@ -60,7 +60,7 @@ def post():
         pickle.dump({}, open("users.data", "wb"))
     userdata = pickle.load(open("users.data", "rb"))
     if userid not in userdata:
-        userdata[userid] = {"saved": [], "skipped": [], "read": [], "tags": {}, "url_dict": {}}
+        userdata[userid] = {"saved": [], "skipped": [], "read": [], "tags": {}, "url_dict": {}, "sources": ["memeorandum", "BBC News - England", "UK News - The latest headlines from the UK | Sky News", "RNZ New Zealand Headlines"]}
     if type(json_data) != dict or "request_type" not in json_data:
         return Response(json.dumps({'Error': 'Bad Request'}), status=400, mimetype='application/json')
     elif json_data["request_type"] == "feed":
@@ -123,6 +123,16 @@ def post():
         userdata[userid]["tags"] = json_data["tags"]
         pickle.dump(userdata, open("users.data", "wb"))
         return Response(json.dumps({'Success': True}), status=200, mimetype='application/json')
+    elif json_data["request_type"] == "set_sources":
+        if "sources" not in json_data or type(json_data["sources"]) != list:
+            return Response(json.dumps({'Error': 'Bad Request'}), status=400, mimetype='application/json')
+        else:
+            """
+            Saving Sources (User-Based)
+            """
+            userdata[userid]["sources"] = json_data["sources"]
+            pickle.dump(userdata, open("users.data", "wb"))
+            return Response(json.dumps({'Success': True}), status=200, mimetype='application/json')
     elif json_data["request_type"] == "get_info":
         print([json.dumps(userdata[userid])])
         return Response(json.dumps(userdata[userid]), status=200, mimetype='application/json')

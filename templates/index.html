@@ -148,7 +148,7 @@ function print_feed() {
     document.getElementById("feed").innerHTML = "";
     for (let j = 0, size = window.feed.length; j < size; j++) {
         let sanitised_obj = window.feed[j];
-        if ((sanitised_obj.skipped !== true) && (sanitised_obj.saved !== true) && (window.my_data.read.indexOf(sanitised_obj.link) === -1)) {
+        if ((sanitised_obj.skipped !== true) && (sanitised_obj.saved !== true) && (window.my_data.read.indexOf(sanitised_obj.link) === -1) && (window.my_data.sources.indexOf(sanitised_obj.source) > -1)) {
             document.getElementById("feed").innerHTML = document.getElementById("feed").innerHTML +
                             "<div class='item'><div class='source'>" + sanitised_obj.source + "<span class='date'> " + sanitised_obj.published + "</div><div class='story'><a href='#' onclick='send_read(\"" + sanitised_obj.link + "\", false)'>" + sanitised_obj.title + "</a></div><div class='actions'><a href='#' onclick='send_skipped(\"" + sanitised_obj.link + "\", false)'>Skip</a> <a href='#' onclick='send_saved(\"" + sanitised_obj.link + "\", false)'>Save</a></div></div>";
         }
