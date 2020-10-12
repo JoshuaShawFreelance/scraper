@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>myFilter/skipped</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" type="text/css" href="/static/css/main.css" />
+  <script async defer data-domain="dev.myfilter.io" src="https://plausible.io/js/plausible.js"></script>
+</head>
+    <div class="navbar">
+      <div class="dropdown">
+        <button class="dropbtn">Settings
+          <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-content">
+          <a href="/">Latest</a>
+          <a href="/saved">Saved</a>
+            <a href="/skipped">Skipped</a>
+          <a href="/read">Read</a>
+        </div>
+      </div>
+    </div>
+  <body>
+<div id="feed"></div>
+<script>
+// Obfuscate + Minify code for production?
+
+function removeDuplicates(array) {
+  return array.filter((a, b) => array.indexOf(a) === b)
+}
+
+function remove_element(my_list, element) {
+  my_list.splice(my_list.indexOf(element), 1);
+  return my_list
+}
+
+
+</script>
+</body>
+</html>

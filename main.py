@@ -23,6 +23,13 @@ def index():
     return resp
 
 
+@app.route('/settings', methods=["GET"])
+def settings():
+    resp = make_response(render_template("settings.html"))  # Need to change
+    resp.set_cookie('userID', get_uuid(request))
+    return resp
+
+
 @app.route('/saved', methods=["GET"])
 def saved():
     resp = make_response(render_template("saved.html"))  # Need to change
