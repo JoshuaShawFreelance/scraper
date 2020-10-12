@@ -64,8 +64,8 @@ function set_read(url, read) {
     xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
     xhr.send('{"request_type": "set_read", "url_list": ' + JSON.stringify(removeDuplicates(read)) + '}');
     xhr.onloadend = function () {
-        parse_feed(window.feed, window.my_data);
-        print_feed();
+        //parse_feed(window.feed, window.my_data);
+        //print_feed();
         add_url_dict(url);
         window.location.href = url;  //maybe offer setting to change between?
         //window.open(url, "_blank");
