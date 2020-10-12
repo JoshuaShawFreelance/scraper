@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, send_file, session, redirect, jsonify, Response, make_response
-from constants import MAX_FEED_LENGTH
+from constants import MAX_FEED_LENGTH, DEFAULT_SOURCES
 from _thread import start_new_thread
 from scraper import start_scraper
 import json
@@ -60,7 +60,7 @@ def post():
         pickle.dump({}, open("users.data", "wb"))
     userdata = pickle.load(open("users.data", "rb"))
     if userid not in userdata:
-        userdata[userid] = {"saved": [], "skipped": [], "read": [], "tags": {}, "url_dict": {}, "sources": ["memeorandum", "BBC News - England", "UK News - The latest headlines from the UK | Sky News", "RNZ New Zealand Headlines"]}
+        userdata[userid] = {"saved": [], "skipped": [], "read": [], "tags": {}, "url_dict": {}, "sources": DEFAULT_SOURCES}
     if type(json_data) != dict or "request_type" not in json_data:
         return Response(json.dumps({'Error': 'Bad Request'}), status=400, mimetype='application/json')
     elif json_data["request_type"] == "feed":
